@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"github.com/terraform-providers/terraform-provider-mysql/mysql/data_provider"
 	"net"
 	"net/url"
 	"regexp"
@@ -31,6 +32,7 @@ type MySQLConfiguration struct {
 	MaxOpenConns           int
 	ConnectRetryTimeoutSec time.Duration
 	db                     *sql.DB
+	Token                  string
 }
 
 func (c *MySQLConfiguration) GetDbConn() (*sql.DB, error) {
@@ -163,12 +165,27 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		return dialer.Dial("tcp", network)
 	})
 
+	credentials := data_provider.Credential{
+		GrantType:    "",
+		ClientId:     "",
+		ClientSecret: "",
+		Resource:     "",
+		Tenant:       "",
+	}
+
+	token, err := data_provider.Login(&credentials)
+
+	if err != nil {
+		return nil, err
+	}
+
 	mysqlConf := &MySQLConfiguration{
 		Config:                 &conf,
 		MaxConnLifetime:        time.Duration(d.Get("max_conn_lifetime_sec").(int)) * time.Second,
 		MaxOpenConns:           d.Get("max_open_conns").(int),
 		ConnectRetryTimeoutSec: time.Duration(d.Get("connect_retry_timeout_sec").(int)) * time.Second,
 		db:                     nil,
+		Token:                  token,
 	}
 
 	return mysqlConf, nil

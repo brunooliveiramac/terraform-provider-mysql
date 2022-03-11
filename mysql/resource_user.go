@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+	"github.com/terraform-providers/terraform-provider-mysql/mysql/data_provider"
 	"log"
 	"strings"
 
@@ -63,11 +64,71 @@ func resourceUser() *schema.Resource {
 				ForceNew: true,
 				Default:  "NONE",
 			},
+			"arm_client_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_CLIENT_ID", nil),
+			},
+			"arm_client_secret": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_CLIENT_SECRET", nil),
+			},
+			"arm_subscription_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_SUBSCRIPTION_ID", nil),
+			},
+			"agent_ip": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("AGENT_IP", nil),
+			},
+			"resource_group": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 		},
 	}
 }
 
 func CreateUser(d *schema.ResourceData, meta interface{}) error {
+
+	var ip string
+	if v, ok := d.GetOk("agent_ip"); ok {
+		ip = v.(string)
+	}
+
+	var serverName string
+	if v, ok := d.GetOk("host"); ok {
+		serverName = v.(string)
+	}
+
+	var resourceGroup string
+	if v, ok := d.GetOk("resource_group"); ok {
+		ip = v.(string)
+	}
+
+	var subscription string
+	if v, ok := d.GetOk("subscription"); ok {
+		ip = v.(string)
+	}
+
+	firewallRule := data_provider.ServerFirewallIpRule{
+		IP:            ip,
+		ServerName:    serverName,
+		ResourceGroup: resourceGroup,
+		Subscription:  subscription,
+	}
+
+	tokenStored := meta.(*MySQLConfiguration).Token
+
+	agentErr := data_provider.AddAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	db, err := meta.(*MySQLConfiguration).GetDbConn()
 	if err != nil {
 		return err
@@ -128,10 +189,52 @@ func CreateUser(d *schema.ResourceData, meta interface{}) error {
 	user := fmt.Sprintf("%s@%s", d.Get("user").(string), d.Get("host").(string))
 	d.SetId(user)
 
+	agentErr = data_provider.DeleteAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	return nil
 }
 
 func UpdateUser(d *schema.ResourceData, meta interface{}) error {
+
+	var ip string
+	if v, ok := d.GetOk("agent_ip"); ok {
+		ip = v.(string)
+	}
+
+	var serverName string
+	if v, ok := d.GetOk("host"); ok {
+		serverName = v.(string)
+	}
+
+	var resourceGroup string
+	if v, ok := d.GetOk("resource_group"); ok {
+		ip = v.(string)
+	}
+
+	var subscription string
+	if v, ok := d.GetOk("subscription"); ok {
+		ip = v.(string)
+	}
+
+	firewallRule := data_provider.ServerFirewallIpRule{
+		IP:            ip,
+		ServerName:    serverName,
+		ResourceGroup: resourceGroup,
+		Subscription:  subscription,
+	}
+
+	tokenStored := meta.(*MySQLConfiguration).Token
+
+	agentErr := data_provider.AddAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	db, err := meta.(*MySQLConfiguration).GetDbConn()
 	if err != nil {
 		return err
@@ -206,10 +309,52 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
+	agentErr = data_provider.DeleteAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	return nil
 }
 
 func ReadUser(d *schema.ResourceData, meta interface{}) error {
+
+	var ip string
+	if v, ok := d.GetOk("agent_ip"); ok {
+		ip = v.(string)
+	}
+
+	var serverName string
+	if v, ok := d.GetOk("host"); ok {
+		serverName = v.(string)
+	}
+
+	var resourceGroup string
+	if v, ok := d.GetOk("resource_group"); ok {
+		ip = v.(string)
+	}
+
+	var subscription string
+	if v, ok := d.GetOk("subscription"); ok {
+		ip = v.(string)
+	}
+
+	firewallRule := data_provider.ServerFirewallIpRule{
+		IP:            ip,
+		ServerName:    serverName,
+		ResourceGroup: resourceGroup,
+		Subscription:  subscription,
+	}
+
+	tokenStored := meta.(*MySQLConfiguration).Token
+
+	agentErr := data_provider.AddAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	db, err := meta.(*MySQLConfiguration).GetDbConn()
 	if err != nil {
 		return err
@@ -229,10 +374,53 @@ func ReadUser(d *schema.ResourceData, meta interface{}) error {
 	if !rows.Next() && rows.Err() == nil {
 		d.SetId("")
 	}
+
+	agentErr = data_provider.DeleteAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	return rows.Err()
 }
 
 func DeleteUser(d *schema.ResourceData, meta interface{}) error {
+
+	var ip string
+	if v, ok := d.GetOk("agent_ip"); ok {
+		ip = v.(string)
+	}
+
+	var serverName string
+	if v, ok := d.GetOk("host"); ok {
+		serverName = v.(string)
+	}
+
+	var resourceGroup string
+	if v, ok := d.GetOk("resource_group"); ok {
+		ip = v.(string)
+	}
+
+	var subscription string
+	if v, ok := d.GetOk("subscription"); ok {
+		ip = v.(string)
+	}
+
+	firewallRule := data_provider.ServerFirewallIpRule{
+		IP:            ip,
+		ServerName:    serverName,
+		ResourceGroup: resourceGroup,
+		Subscription:  subscription,
+	}
+
+	tokenStored := meta.(*MySQLConfiguration).Token
+
+	agentErr := data_provider.AddAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	db, err := meta.(*MySQLConfiguration).GetDbConn()
 	if err != nil {
 		return err
@@ -248,6 +436,13 @@ func DeleteUser(d *schema.ResourceData, meta interface{}) error {
 	if err == nil {
 		d.SetId("")
 	}
+
+	agentErr = data_provider.DeleteAgentIp(&firewallRule, tokenStored)
+
+	if agentErr != nil {
+		return agentErr
+	}
+
 	return err
 }
 
