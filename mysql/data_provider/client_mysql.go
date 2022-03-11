@@ -3,6 +3,7 @@ package data_provider
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -81,9 +82,12 @@ func Login(credential *Credential) (token string, err error) {
 
 	println(bodyString)
 
+	msg := fmt.Sprintf("Request: %s, Response %s", string(requestDump), bodyString)
+
 	if resp.StatusCode != 200 {
 		log.Printf("Error : %d", resp.StatusCode)
-		return "", err
+		return "", errors.New(msg)
+
 	}
 
 	defer resp.Body.Close()
@@ -131,13 +135,21 @@ func AddAgentIp(firewall *ServerFirewallIpRule, token string) (err error) {
 		return err
 	}
 
+	requestDump, err := httputil.DumpRequest(req, true)
+
+	if err != nil {
+		return err
+	}
+
 	bodyString := string(bodyBytes)
 
 	println(bodyString)
 
+	msg := fmt.Sprintf("Request: %s, Response %s", string(requestDump), bodyString)
+
 	if resp.StatusCode != 202 {
 		log.Printf("Error : %d", resp.StatusCode)
-		return err
+		return errors.New(msg)
 	}
 
 	defer resp.Body.Close()
@@ -170,9 +182,17 @@ func DeleteAgentIp(firewall *ServerFirewallIpRule, token string) (err error) {
 
 	println(bodyString)
 
+	requestDump, err := httputil.DumpRequest(req, true)
+
+	if err != nil {
+		return err
+	}
+
+	msg := fmt.Sprintf("Request: %s, Response %s", string(requestDump), bodyString)
+
 	if resp.StatusCode != 202 {
 		log.Printf("Error : %d", resp.StatusCode)
-		return err
+		return errors.New(msg)
 	}
 
 	return nil

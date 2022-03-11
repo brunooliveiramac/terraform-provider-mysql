@@ -106,12 +106,12 @@ func CreateUser(d *schema.ResourceData, meta interface{}) error {
 
 	var resourceGroup string
 	if v, ok := d.GetOk("resource_group"); ok {
-		ip = v.(string)
+		resourceGroup = v.(string)
 	}
 
 	var subscription string
-	if v, ok := d.GetOk("subscription"); ok {
-		ip = v.(string)
+	if v, ok := d.GetOk("arm_subscription_id"); ok {
+		subscription = v.(string)
 	}
 
 	firewallRule := data_provider.ServerFirewallIpRule{
@@ -212,12 +212,12 @@ func UpdateUser(d *schema.ResourceData, meta interface{}) error {
 
 	var resourceGroup string
 	if v, ok := d.GetOk("resource_group"); ok {
-		ip = v.(string)
+		resourceGroup = v.(string)
 	}
 
 	var subscription string
-	if v, ok := d.GetOk("subscription"); ok {
-		ip = v.(string)
+	if v, ok := d.GetOk("arm_subscription_id"); ok {
+		subscription = v.(string)
 	}
 
 	firewallRule := data_provider.ServerFirewallIpRule{
@@ -332,12 +332,12 @@ func ReadUser(d *schema.ResourceData, meta interface{}) error {
 
 	var resourceGroup string
 	if v, ok := d.GetOk("resource_group"); ok {
-		ip = v.(string)
+		resourceGroup = v.(string)
 	}
 
 	var subscription string
-	if v, ok := d.GetOk("subscription"); ok {
-		ip = v.(string)
+	if v, ok := d.GetOk("arm_subscription_id"); ok {
+		subscription = v.(string)
 	}
 
 	firewallRule := data_provider.ServerFirewallIpRule{
@@ -398,12 +398,12 @@ func DeleteUser(d *schema.ResourceData, meta interface{}) error {
 
 	var resourceGroup string
 	if v, ok := d.GetOk("resource_group"); ok {
-		ip = v.(string)
+		resourceGroup = v.(string)
 	}
 
 	var subscription string
-	if v, ok := d.GetOk("subscription"); ok {
-		ip = v.(string)
+	if v, ok := d.GetOk("arm_subscription_id"); ok {
+		subscription = v.(string)
 	}
 
 	firewallRule := data_provider.ServerFirewallIpRule{

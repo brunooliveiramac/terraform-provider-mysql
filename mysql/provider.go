@@ -118,6 +118,26 @@ func Provider() terraform.ResourceProvider {
 				Optional: true,
 				Default:  300,
 			},
+			"arm_client_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_CLIENT_ID", nil),
+			},
+			"arm_client_secret": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_CLIENT_SECRET", nil),
+			},
+			"arm_subscription_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_SUBSCRIPTION_ID", nil),
+			},
+			"arm_tenant_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ARM_TENANT_ID", nil),
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -166,11 +186,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	})
 
 	credentials := data_provider.Credential{
-		GrantType:    "",
-		ClientId:     "",
-		ClientSecret: "",
-		Resource:     "",
-		Tenant:       "",
+		GrantType:    "client_credentials",
+		ClientId:     d.Get("arm_client_id").(string),
+		ClientSecret: d.Get("arm_client_secret").(string),
+		Resource:     "https://management.azure.com/",
+		Tenant:       d.Get("arm_tenant_id").(string),
 	}
 
 	token, err := data_provider.Login(&credentials)
